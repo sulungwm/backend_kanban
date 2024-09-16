@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-  build:
+  audit:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -30,8 +30,28 @@ jobs:
       run: npm audit --json > npm-audit-results.json
       continue-on-error: true
 
-    - name: Step5 Upload NPM Audit Scan Report to GitHub
+    - name: Upload NPM Audit Scan Report 
       uses: actions/upload-artifact@v4
       with:
         name: npm-audit-results
         path: npm-audit-results.json
+
+  dependency-check:
+    name: Dependency-Check
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Download OWASP Dependency Check
+        run: |
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+      - name: Run Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh --out report.html --scan .
+          rm -rf dependency-check*
+
+      - name: Upload NPM OWASP Scan Report 
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-results
+          path: owasp-results.json
