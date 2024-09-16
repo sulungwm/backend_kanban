@@ -42,17 +42,12 @@ jobs:
     steps:
     
     - name: Deploy using SSH
-      uses: appleboy/ssh-action@v1.0.3
+      uses: sebastianjnuwu/ssh-action-deploy@v3
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd ~/apps/backend_kanban
-          git pull origin main
-          git status
-          npm install
-          pm2 reload backend_kanban
-          pm2 restart backend_kanban
+        IP: ${{ secrets.HOST }}
+        USER: ${{ secrets.USERNAME }}
+        KEY: ${{ secrets.PRIVATE_KEY }}
+        FOLDER: "/apps/backend_kanban"
+        RUN: "git pull origin main; git status; npm install;  pm2 reload backend_kanban ;pm2 restart backend_kanban"
+        
     
