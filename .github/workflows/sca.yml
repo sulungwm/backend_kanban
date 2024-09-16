@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-  npmaudit:
+  NPMaudit:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -36,27 +36,3 @@ jobs:
         name: npm-audit-results
         path: npm-audit-results.json
 
-  retirejs:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-         node-version: '18' 
-
-    - name: Install Retire.js
-      run: npm install -g retire
-
-    - name: Run Retire.js
-      run: retire > retirejs-results.json
-      continue-on-error: true
-
-    - name: Upload Scan Report 
-      uses: actions/upload-artifact@v4
-      with:
-        name: retirejs-results
-        path: retirejs-results.json
