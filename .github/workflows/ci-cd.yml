@@ -26,8 +26,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build
-      run: npm run build
+    - name: Audit
+      run: npm audit
 
   deploy:
     runs-on: ubuntu-latest
