@@ -36,29 +36,12 @@ jobs:
         name: npm-audit-results
         path: npm-audit-results.json
 
-  owasp:
-    name: Run OWASP Dependency-Check for Node.js
+  retirejs:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download OWASP Dependency Check
-        run: |
-          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
-          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
-          unzip dependency-check.zip
-      
-      - name: Run Dependency-Check with NVD API Key
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          ./dependency-check/bin/dependency-check.sh --out report.html --scan . --nvdApiKey $NVD_API_KEY
-          rm -rf dependency-check*
-
-      - name: Upload OWASP Dependency-Check Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: owasp-report
-          path: report.html
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - run: npm install -g retire
+    - run: retire --outputformat json --outputpath ./retire-report.json
