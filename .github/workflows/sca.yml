@@ -41,43 +41,24 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'  # Set version of Node.js
-
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # Step 4: Download OWASP Dependency-Check
-      - name: Download OWASP Dependency-Check
+      - name: Download OWASP Dependency Check
         run: |
-          curl -L -o dependency-check.tar.gz https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.tar.gz
-          tar -xzf dependency-check.tar.gz
-          sudo mv dependency-check /usr/local/bin/dependency-check
-
-      # Step 5: Run OWASP Dependency-Check
-      - name: Run Dependency-Check for Node.js
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+      
+      - name: Run Dependency-Check with NVD API Key
         env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}  # Use secret from GitHub Secrets
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          /usr/local/bin/dependency-check/bin/dependency-check.sh \
-          --project "MyNodeProject" \
-          --scan ./ \
-          --format "HTML" \
-          --out dependency-check-report \
-          --cveValidForHours 12 \
-          --nvdApiKey $NVD_API_KEY
+          ./dependency-check/bin/dependency-check.sh --out report.html --scan . --nvdApiKey $NVD_API_KEY
+          rm -rf dependency-check*
 
-      # Step 6: Upload report as artifact
-      - name: Upload Dependency-Check report
+      - name: Upload OWASP Dependency-Check Report
         uses: actions/upload-artifact@v4
         with:
-          name: dependency-check-report
-          path: dependency-check-report/
+          name: owasp-report
+          path: report.html
