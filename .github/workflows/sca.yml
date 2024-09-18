@@ -27,14 +27,8 @@ jobs:
       run: npm install
 
     - name: Npm Audit
-      run: npm audit --json > npm-audit-results.json
+      run: npm audit 
       continue-on-error: true
-
-    - name: Upload NPM Audit Report 
-      uses: actions/upload-artifact@v4
-      with:
-        name: npm-audit-results
-        path: npm-audit-results.json
 
     - name: Fossa Scan
       uses: fossas/fossa-action@main # Use a specific version if locking is preferred
