@@ -30,6 +30,9 @@ jobs:
       run: npm audit --json > npm-audit-results.json
       continue-on-error: true
 
+    - name: Display NPM Audit Scan Report
+      run: cat npm-audit-results.json
+
     - name: Upload NPM Audit Scan Report 
       uses: actions/upload-artifact@v4
       with:
