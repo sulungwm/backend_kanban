@@ -38,7 +38,7 @@ jobs:
       run: npm install -g snyk snyk-to-html
 
     - name: Authenticate Snyk
-      run: snyk auth ${{secrets.SNYK_TOKEN}}
+      run: snyk auth "e477db16-122e-4c40-bcee-ef7ab7afacc1"
 
     - name: Snyk Monitor
       run: snyk monitor --project-name=${{github.repository}}
