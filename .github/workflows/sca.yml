@@ -33,23 +33,19 @@ jobs:
       uses: fossas/fossa-action@main
       with:
         api-key: ${{secrets.FOSSA_API}}
-
-    - name: Install Snyk
-      run: npm install -g snyk snyk-to-html
-
-    - name: Authenticate Snyk
-      run: snyk auth "e477db16-122e-4c40-bcee-ef7ab7afacc1"
-
-    - name: Snyk Monitor
-      run: snyk monitor --project-name=${{github.repository}}
-
-    - name: Snyk Test and Generate HTML
-      run: |
-        snyk test --json > snyk_results.json
-        snyk-to-html -i snyk_results.json -o snyk_results.html
-
-    - name: Upload Snyk Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: snyk_results
-        path: snyk_results.html
+        
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: e477db16-122e-4c40-bcee-ef7ab7afacc1
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
